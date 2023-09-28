@@ -1,19 +1,15 @@
-﻿$CurrPolicy=Get-ExecutionPolicy
-Write-Host Original policy is $CurrPolicy 
-Set-ExecutionPolicy Unrestricted -Force -Confirm:$false
+﻿Set-ExecutionPolicy Unrestricted -Force -Confirm:$false >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
 
-Write-Host "Beginning update."
-   
-Write-Host policy is $CurrPolicy 
- 
-Install-PackageProvider -Name NuGet -Force -Confirm:$false
-Install-Module -Name PSWindowsUpdate -Force -Confirm:$false
-Get-WindowsUpdate;
+$getDateTime=Get-Date
+echo "Start update for $env:COMPUTERNAME at $getDateTime" >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
 
-Install-WindowsUpdate -acceptall
+Install-PackageProvider -Name NuGet -Force -Confirm:$false >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
+Install-Module -Name PSWindowsUpdate -Force -Confirm:$false >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
+Get-WindowsUpdate >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
 
-Write-Host "Update complete."
+Install-WindowsUpdate -acceptall >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
 
+echo "Updated $env:COMPUTERNAME at $getDateTime" >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
 
-Set-ExecutionPolicy $CurrPolicy -Force
-Write-host updatedpolicy is $CurrPolicy
+echo "setting automatic time" >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
+w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:YES /update >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
