@@ -1,0 +1,1 @@
+for /l %%a in (1,1,50) do (start notepad)
