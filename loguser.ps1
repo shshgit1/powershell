@@ -10,9 +10,9 @@ $timeDifference=New-TimeSpan -Start $(gcim win32_operatingsystem).lastbootuptime
 
 $timeDifferenceInDays=$timeDifference.days
 
-$logfilePath="N:\ICT\scripts\log\RestartStatus\$GetYear$GetMonth\$env:COMPUTERNAME.txt"
-$logfilePath2= "N:\ICT\scripts\log\Userlogons\$GetYear$GetMonth.txt"
-$errorLogPath= "\\go-fs02\non-restricted$\ICT\scripts\log\errors\error.txt"
+$logfilePath= #log file path
+$logfilePath2=  #log file path
+$errorLogPath= #error log path
 
 
 
