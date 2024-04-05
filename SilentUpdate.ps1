@@ -1,15 +1,38 @@
-﻿Set-ExecutionPolicy Unrestricted -Force -Confirm:$false >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
+﻿$today=Get-Date
 
 $getDateTime=Get-Date
-echo "Start update for $env:COMPUTERNAME at $getDateTime" >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
 
-Install-PackageProvider -Name NuGet -Force -Confirm:$false >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
-Install-Module -Name PSWindowsUpdate -Force -Confirm:$false >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
-Get-WindowsUpdate >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
+$GetYear=(get-date).year
+$GetMonth=(get-date).ToString("MM")
 
-Install-WindowsUpdate -acceptall >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
+$filePath = "\\go-fs02\non-restricted$\ICT\scripts\log\UpdateLogs\$GetYear$GetMonth\"
+$logfilePath="\\go-fs02\non-restricted$\ICT\scripts\log\UpdateLogs\$GetYear$GetMonth\$env:COMPUTERNAME.txt"
+$errorLogPath= "\\go-fs02\non-restricted$\ICT\scripts\log\errors\error.txt"
 
-echo "Updated $env:COMPUTERNAME at $getDateTime" >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
 
-echo "setting automatic time" >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
-w32tm /config /manualpeerlist:"time.windows.com" /syncfromflags:manual /reliable:YES /update >> \\go-fs02\non-restricted$\ICT\scripts\updaterestart\logs\$env:COMPUTERNAME.txt
+
+if (-not (Test-Path $filePath)){
+New-Item -Path $filePath -Force -ItemType Directory
+}
+else
+{ Write-Host "folder exist"
+}
+
+echo "Start update for $env:COMPUTERNAME at $getDateTime" >> $logfilePath
+
+try{
+
+
+Install-PackageProvider -Name NuGet -Force -Confirm:$false >> $logfilePath
+Install-Module -Name PSWindowsUpdate -Force -Confirm:$false >> $logfilePath
+Get-WindowsUpdate >> $logfilePath
+
+Install-WindowsUpdate -acceptall >> $logfilePath
+
+echo "Updated $env:COMPUTERNAME at $getDateTime" >> $logfilePath
+}
+
+catch {
+echo "silentupdate" >> $errorLogPath
+echo "$env:COMPUTERNAME $today" $_ >> $errorLogPath 
+}
