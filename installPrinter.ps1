@@ -1,8 +1,25 @@
-﻿$getDateTime=Get-Date
+﻿try{
+$getDateTime=Get-Date
+$GetYear=(get-date).year
+$GetMonth=(get-date).ToString("MM")
+$today=Get-Date
 
-echo "start checking if printer exists in $env:COMPUTERNAME at $getDateTime" >> \\go-fs02\non-restricted$\ICT\scripts\RunAtStartup\logs\$env:COMPUTERNAME.txt
 
-Set-ExecutionPolicy Unrestricted -Force -Confirm:$false >> "\\go-fs02\non-restricted$\ICT\scripts\RunAtStartup\logs\$env:COMPUTERNAME.txt"
+$filePath = "\\go-fs02\non-restricted$\ICT\scripts\log\PrinterInstallLogs\$GetYear$GetMonth\"
+$logfilePath= "\\go-fs02\non-restricted$\ICT\scripts\log\PrinterInstallLogs\$GetYear$GetMonth\$env:COMPUTERNAME.txt"
+$logfilePath2= "\\go-fs02\non-restricted$\ICT\scripts\log\PrinterInstallLogs\PrinterInstallLog.txt"
+$errorLogPath= "\\go-fs02\non-restricted$\ICT\scripts\log\errors\error.txt"
+
+
+if (-not (Test-Path $filePath)){
+New-Item -Path $filePath -Force -ItemType Directory
+}
+else
+{ Write-Host "folder exist"
+}
+
+Write-Host "check if exist"
+echo "start checking if printer exists in $env:COMPUTERNAME at $getDateTime" >> $logfilePath
 
 $checkPrinter=Get-WmiObject -Query "select * from win32_printer where name= 'GO-PS03' "
 
@@ -10,19 +27,27 @@ $checkPrinter=Get-WmiObject -Query "select * from win32_printer where name= 'GO-
 
 if ($checkPrinter -eq $null){
 
-echo "printer does not exist in $env:COMPUTERNAME at $getDateTime" >> \\go-fs02\non-restricted$\ICT\scripts\RunAtStartup\logs\PrinterInstallLog.txt
+echo "printer does not exist in $env:COMPUTERNAME at $getDateTime" >> $logfilePath2
 
-Copy-Item -Path "\\10.50.1.16\non-restricted$\ICT\scripts\RunAtStartup\printerinstall.printerExport" -Destination "C:\Windows\System32\printerinstall.printerExport" -Force >> "\\go-fs02\non-restricted$\ICT\scripts\RunAtStartup\logs\$env:COMPUTERNAME.txt"
+Copy-Item -Path "\\10.50.1.16\non-restricted$\ICT\scripts\log\printerinstall.printerExport" -Destination "C:\Windows\System32\printerinstall.printerExport" -Force >> $logfilePath
 
-echo "begin installation of printer on $env:COMPUTERNAME at $getDateTime" >> "\\go-fs02\non-restricted$\ICT\scripts\RunAtStartup\logs\$env:COMPUTERNAME.txt"
+echo "begin installation of printer on $env:COMPUTERNAME at $getDateTime" >> $logfilePath
 
 
-C:\Windows\System32\spool\tools\PrintBrm.exe -r -f C:\Windows\System32\printerinstall.printerExport -o force >> "\\go-fs02\non-restricted$\ICT\scripts\RunAtStartup\logs\$env:COMPUTERNAME.txt"
+C:\Windows\System32\spool\tools\PrintBrm.exe -r -f C:\Windows\System32\printerinstall.printerExport -o force >> $logfilePath
 
 }
 else{
 
-echo "printer exists in $env:COMPUTERNAME at $getDateTime" >> \\go-fs02\non-restricted$\ICT\scripts\RunAtStartup\logs\PrinterInstallLog.txt
+echo "printer exists in $env:COMPUTERNAME at $getDateTime" >> $logfilePath2
 
 }
 
+}
+catch{
+
+echo "installprinter" >> $errorLogPath
+echo "$env:COMPUTERNAME $today" $_ >> $errorLogPath
+
+
+}
