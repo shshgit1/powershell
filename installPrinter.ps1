@@ -5,11 +5,11 @@ $GetMonth=(get-date).ToString("MM")
 $today=Get-Date
 
 
-$filePath = "\\go-fs02\non-restricted$\ICT\scripts\log\PrinterInstallLogs\$GetYear$GetMonth\"
-$logfilePath= "\\go-fs02\non-restricted$\ICT\scripts\log\PrinterInstallLogs\$GetYear$GetMonth\$env:COMPUTERNAME.txt"
-$logfilePath2= "\\go-fs02\non-restricted$\ICT\scripts\log\PrinterInstallLogs\PrinterInstallLog.txt"
-$errorLogPath= "\\go-fs02\non-restricted$\ICT\scripts\log\errors\error.txt"
-$printerExportSource= "\\10.50.1.16\non-restricted$\ICT\scripts\log\printerinstall.printerExport"
+$filePath =  #path to store your files
+$logfilePath=  #location of log files
+$logfilePath2=  #location of 2nd log files
+$errorLogPath=  #location of error logs
+$printerExportSource=  #location of printer installation file
 
 
 if (-not (Test-Path $filePath)){
